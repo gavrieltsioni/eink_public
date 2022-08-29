@@ -565,8 +565,8 @@ void showBitmapFrom_HTTP(const char* host, const char* path, const char* filenam
         if (depth <= 8)
         {
           if (depth < 8) bitmask >>= depth;
-          //bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
-          bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
+          bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+          //bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
           for (uint16_t pn = 0; pn < (1 << depth); pn++)
           {
             blue  = client.read();
