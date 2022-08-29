@@ -35,8 +35,8 @@
 // NOTE: you may need to adapt or select for your wiring in the processor specific conditional compile sections below
 
 // select the display class (only one), matching the kind of display panel
-#define GxEPD2_DISPLAY_CLASS GxEPD2_BW
-//#define GxEPD2_DISPLAY_CLASS GxEPD2_3C
+//#define GxEPD2_DISPLAY_CLASS GxEPD2_BW
+#define GxEPD2_DISPLAY_CLASS GxEPD2_3C
 //#define GxEPD2_DISPLAY_CLASS GxEPD2_7C
 
 // select the display driver class (only one) for your  panel
@@ -95,7 +95,7 @@
 //#define GxEPD2_DRIVER_CLASS GxEPD2_583c_Z83 // GDEW0583Z83 648x480, GD7965
 //#define GxEPD2_DRIVER_CLASS GxEPD2_750c     // GDEW075Z09  640x384, UC8179 (IL0371)
 //#define GxEPD2_DRIVER_CLASS GxEPD2_750c_Z08 // GDEW075Z08  800x480, GD7965
-//#define GxEPD2_DRIVER_CLASS GxEPD2_750c_Z90 // GDEH075Z90  880x528, SSD1677
+#define GxEPD2_DRIVER_CLASS GxEPD2_750c_Z90 // GDEH075Z90  880x528, SSD1677
 //#define GxEPD2_DRIVER_CLASS GxEPD2_1248c    // GDEY1248Z51  1304x984, UC8179
 // 7-color e-paper
 //#define GxEPD2_DRIVER_CLASS GxEPD2_565c // Waveshare 5.65" 7-color (3C graphics)
@@ -177,9 +177,9 @@ GxEPD2_DISPLAY_CLASS < GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS) > di
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 
-const char* ssid     = "........";
-const char* password = "........";
-const int httpPort  = 80;
+const char* ssid     = "wifi";
+const char* password = "password";
+const int httpPort  = 8000;
 const int httpsPort = 443;
 const char* fp_api_github_com = "df b2 29 c6 a6 38 1a 59 9d c9 ad 92 2d 26 f5 3c 83 8f a5 87"; // as of 25.11.2020
 const char* fp_github_com     = "5f 3f 7a c2 56 9f 50 a4 66 76 47 c6 a1 8c a0 07 aa ed bb 8e"; // as of 25.11.2020
@@ -294,20 +294,7 @@ void setup()
   // Print the IP address
   Serial.println(WiFi.localIP());
 
-  if ((display.epd2.panel == GxEPD2::GDEW0154Z04) || (display.epd2.panel == GxEPD2::ACeP565) || false)
-  {
-    drawBitmapsBuffered_200x200();
-    drawBitmapsBuffered_other();
-    drawBitmapsBuffered_7C();
-  }
-  else
-  {
-    drawBitmaps_200x200();
-    drawBitmaps_other();
-  }
-
-  //drawBitmaps_test();
-  //drawBitmapsBuffered_test();
+  showBitmapFrom_HTTP("192.168.50.205", "/new_image", "", 0, 0, true);
 
   Serial.println("GxEPD2_WiFi_Example done");
 }
@@ -507,8 +494,8 @@ void showBitmapFrom_HTTP(const char* host, const char* path, const char* filenam
     return;
   }
   Serial.print("requesting URL: ");
-  Serial.println(String("http://") + host + path + filename);
-  client.print(String("GET ") + path + filename + " HTTP/1.1\r\n" +
+  Serial.println(String("http://") + host + String(":") + String(httpPort) + path);
+  client.print(String("GET ") + path + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "User-Agent: GxEPD2_WiFi_Example\r\n" +
                "Connection: close\r\n\r\n");
@@ -531,6 +518,7 @@ void showBitmapFrom_HTTP(const char* host, const char* path, const char* filenam
     }
   }
   if (!connection_ok) return;
+  delay(2000);
   // Parse BMP header
   if (read16(client) == 0x4D42) // BMP signature
   {
