@@ -177,6 +177,7 @@ GxEPD2_DISPLAY_CLASS < GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS) > di
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 
+// Must be a 2.4 GHz network for the ESP8266.
 const char* ssid     = "wifi";
 const char* password = "password";
 const int httpPort  = 8000;
@@ -518,6 +519,9 @@ void showBitmapFrom_HTTP(const char* host, const char* path, const char* filenam
     }
   }
   if (!connection_ok) return;
+  // Because the image is large, a delay is necessary to give time for bytes to appear 
+  // in the stream. Otherwise, the connection will return end of stream bytes, which is 
+  // caught indirectly by failing the BMP signature check below.
   delay(2000);
   // Parse BMP header
   if (read16(client) == 0x4D42) // BMP signature
@@ -565,8 +569,8 @@ void showBitmapFrom_HTTP(const char* host, const char* path, const char* filenam
         if (depth <= 8)
         {
           if (depth < 8) bitmask >>= depth;
-          bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
-          //bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
+          //bytes_read += skip(client, 54 - bytes_read); //palette is always @ 54
+          bytes_read += skip(client, imageOffset - (4 << depth) - bytes_read); // 54 for regular, diff for colorsimportant
           for (uint16_t pn = 0; pn < (1 << depth); pn++)
           {
             blue  = client.read();
