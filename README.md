@@ -1,3 +1,25 @@
+# README
+
+A simple program for downloading BMP images over Wifi on an ESP8266 and displaying them to a Waveshare 7.5" b/w/r E-Ink display. This is a modification of the [wifi example included in GxEPD2](https://github.com/ZinggJM/GxEPD2/blob/master/examples/GxEPD2_WiFi_Example/GxEPD2_WiFi_Example.ino).
+
+**Screen:**
+
+880×528, 7.5inch E-Ink display HAT for Raspberry Pi, red / black / white three-color
+
+SKU: 17960
+
+Part Number: 7.5inch HD e-Paper HAT (B)
+
+Brand: Waveshare
+
+**Controller:**
+
+ESP8266
+
+# Creating BMP images
+
+Note that any BMP images displayed using the bitmap processing included in the GxEPD2 examples must have a color table size that is equal to the square of the bit depth of the image. I used Photoshop to create BMP images that had a bit depth of 4 and a color table size of 16. Given that my E-Ink display only supports 3 colors, I set the first 3 colors as black, red, and white, and then padded the rest of the colors with black until I had 16 colors in total. [More info can be found here](https://forum.arduino.cc/t/waveshare-e-paper-displays-with-spi/467865/3138?u=gtsioni).
+
 # Issue with black image links
 
 [Link to 880x528 bmp](https://drive.google.com/file/d/1MszMWq1h0jqFslfFS5JgHsHkx_4ozQIp/view?usp=sharing)
